@@ -1,0 +1,138 @@
+
+document.addEventListener('DOMContentLoaded', function() {
+    var calendarEl = document.getElementById('calendar');
+
+    var selectedDate = null;
+    var selectedTime = null;
+
+    var calendar = new FullCalendar.Calendar(calendarEl, {
+        initialView: 'dayGridMonth',
+        selectable: true,
+        select: function(info) {
+            selectedDate = info.startStr;
+            selectedTime = prompt("Choose a time (e.g., 2:00 PM):");
+            if (selectedTime) {
+                alert("Selected: " + selectedDate + " at " + selectedTime);
+                document.getElementById("paypal-button-container").style.display = "block";
+            }
+        }
+    });
+
+    calendar.render();
+
+    paypal.Buttons({
+        createOrder: function(data, actions) {
+            return actions.order.create({
+                purchase_units: [{
+                    amount: { value: '50.00' },
+                    description: "Electri Music Studio Session"
+                }]
+            });
+        },
+        onApprove: function(data, actions) {
+            return actions.order.capture().then(function(details) {
+                alert("Payment complete! Booking confirmed for " + selectedDate + " at " + selectedTime);
+            });
+        }
+    }).render('#paypal-button-container');
+});
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Electri Music</title>
+<link rel="stylesheet" href="style.css">
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.4/index.global.min.js"></script>
+</head>
+<body>
+
+<header class="hero">
+  <img src="logo.jpeg" class="logo">
+  <h1>Electri Music</h1>
+  <p class="tagline">Creative Neon • Recording • Mixing • Mastering</p>
+  <a href="#booking" class="btn">Book a Session</a>
+</header>
+
+<section id="about">
+  <h2>About</h2>
+  <p>Located in the Bronx, NY, Electri Music provides high-quality recording, mixing, and mastering with a creative neon vibe.</p>
+</section>
+
+<section id="services">
+  <h2>Services & Rates</h2>
+  <p>Below are the full pricing sheets (English & Spanish):</p>
+  <div class="rate-images">
+    <img src="rates_en.jpeg" class="rate-card">
+    <img src="rates_es.jpeg" class="rate-card">
+  </div>
+</section>
+
+<section id="booking">
+  <h2>Booking Calendar</h2>
+  <div id="calendar"></div>
+  <h3>Payment (PayPal)</h3>
+  <p>Complete payment after selecting your session time:</p>
+  <div id="paypal-button-container"></div>
+</section>
+
+<section id="contact">
+  <h2>Contact</h2>
+  <p>Email: <a href="mailto:Geovannyenlapista@gmail.com">Geovannyenlapista@gmail.com</a></p>
+  <p>Location: Bronx, NY</p>
+</section>
+
+<script src="app.js"></script>
+<script src="https://www.paypal.com/sdk/js?client-id=YOUR_PAYPAL_CLIENT_ID&currency=USD"></script>
+</body>
+</html>
+
+
+body {
+  margin:0;
+  font-family: Arial, sans-serif;
+  background: #050014;
+  color: #fff;
+}
+.hero {
+  text-align:center;
+  padding:80px 20px 120px;
+  background: linear-gradient(135deg,#8a00ff,#00eaff);
+}
+.logo {
+  width:160px;
+  margin-bottom:20px;
+  border-radius:10px;
+  box-shadow:0 0 20px #00eaff;
+}
+.tagline { font-size:1.3rem; }
+.btn {
+  background:#00eaff;
+  padding:12px 25px;
+  color:#000;
+  text-decoration:none;
+  border-radius:5px;
+  margin-top:20px;
+  display:inline-block;
+}
+section { padding:60px 20px; max-width:1000px; margin:auto; }
+.rate-images {
+  display:flex;
+  gap:20px;
+  flex-wrap:wrap;
+  justify-content:center;
+}
+.rate-card {
+  width:90%;
+  max-width:420px;
+  border-radius:10px;
+  box-shadow:0 0 15px #8a00ff;
+}
+#calendar {
+  background:#111;
+  padding:20px;
+  border-radius:10px;
+  margin-bottom:30px;
+}
